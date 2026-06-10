@@ -1,0 +1,68 @@
+mkdir -p Views/Home && cat << 'EOF' > Views/Home/Boletim.cshtml
+@using BoletimEscolar.Models
+@{
+    ViewData["Title"] = "Boletim Escolar MVC";
+    var listaBoletim = ViewBag.BoletimCompleto as List<DisciplinaNota>;
+    double somaNotas = 0;
+}
+
+<h2>Boletim Escolar (Padrão MVC)</h2>
+
+<table border="1" style="border-collapse: collapse; width: 100%; max-width: 600px; text-align: left;">
+    <thead>
+        <tr>
+            <th style="padding: 8px;">Disciplina</th>
+            <th style="padding: 8px;">Nota</th>
+            <th style="padding: 8px;">Classificação</th>
+            <th style="padding: 8px;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in listaBoletim)
+        {
+            somaNotas += item.Nota;
+            string letra = "";
+
+            @switch (item.Nota)
+            {
+                case double n when n >= 9:
+                    letra = "A";
+                    break;
+                case double n when n >= 7:
+                    letra = "B";
+                    break;
+                case double n when n >= 5:
+                    letra = "C";
+                    break;
+                default:
+                    letra = "D";
+                    break;
+            }
+
+            <tr>
+                <td style="padding: 8px;">@item.Nome</td>
+                <td style="padding: 8px;">@item.Nota.ToString("F1")</td>
+                <td style="padding: 8px; font-weight: bold;">@letra</td>
+                <td style="padding: 8px; font-weight: bold;">
+                    @if (item.Nota >= 6)
+                    {
+                        <span style="color: green;">Aprovado</span>
+                    }
+                    else
+                    {
+                        <span style="color: red;">Reprovado</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    double mediaGeral = somaNotas / listaBoletim.Count;
+}
+
+<p style="margin-top: 15px; font-weight: bold; font-size: 1.1em;">
+    Média Geral: <span style="@(mediaGeral >= 6 ? "color: green;" : "color: red;")">@mediaGeral.ToString("F1")</span>
+</p>
+EOF
